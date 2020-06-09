@@ -1,2 +1,2 @@
-export const port: number = 8080;
-export const urls: string = `http://localhost:${port}/`;
+export const port: number = 2457;
+export const urls: string = `http://localhost:${port}`;

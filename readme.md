@@ -1,7 +1,7 @@
 # Teishi
 Teishi est une api codé en typescript avec le runtime deno, pour une api "moderne", elle propose des hentai, l'api est actuellement indisponible mais sera ouvert dans peu de temps
 
-## Built With
+## Construit avec
 
 * [Deno](https://www.deno.land) - runtime
 * [TypeScript](https://www.typescriptlang.org/) - language
@@ -11,7 +11,7 @@ Teishi est une api codé en typescript avec le runtime deno, pour une api "moder
 const axios = require('axios');
 axios({
   method: 'get',
-  url: '{link}/api/v1/yuri',
+  url: 'http://51.75.190.143:2457/api/v1/yuri',
 })
   .then(function (response) {
     console.log(response.data.url)

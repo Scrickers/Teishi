@@ -1,54 +1,45 @@
 import { serve } from "https://deno.land/std/http/server.ts";
 import { serveFile } from "https://deno.land/std/http/file_server.ts";
+import { getImg, endpoints, checkUrl } from "./src/function.ts";
 import { port, urls } from "./config.ts";
+import { consoleGet, infos } from "./src/console.ts";
+
 const s = serve({ port: port });
-let link = "";
-console.log(urls);
+
+infos(
+  `\x1b[35mAPI Teishi actuellement activé sur l'url \x1b[32m${urls}\x1b[0m 🦕`,
+);
 
 for await (const req of s) {
+  consoleGet(req);
   const { url } = req;
   if (checkUrl("img", url)) {
-    const reponse = await serveFile(req, "." + url);
+    const reponse = await serveFile(req, "./src/" + url);
     req.respond(reponse);
   } else if (checkUrl("api", url)) {
-    if (checkUrl("yuri", url)) {
-      link = getImg("yuri")[
-        Math.round(Math.random() * (getImg("yuri").length - 1))
-      ];
-    } else if (checkUrl("pussy", url)) {
-      link = getImg("pussy")[
-        Math.round(Math.random() * (getImg("pussy").length - 1))
-      ];
-    }else if (checkUrl("boobs", url)) {
-      link = getImg("boobs")[
-        Math.round(Math.random() * (getImg("boobs").length - 1))
-      ];
-    } else Err(req);
-    req.respond({ body: JSON.stringify({ url: link }), status: 200 });
+    if (endpoints(url)) {
+      req.respond({
+        body: JSON.stringify({
+          url: getImg(endpoints(url))[
+            Math.round(Math.random() * (getImg(endpoints(url)).length - 1))
+          ],
+        }),
+        status: 200,
+      });
+    } else {
+      req.respond({
+        status: 404,
+        body: JSON.stringify({
+          url: "Lien incorrect",
+        }),
+      });
+    }
   } else {
-    Err(req);
+    req.respond({
+      status: 303,
+      body: JSON.stringify({
+        url: `Lien correct ${urls}/api/v1/{{endpoints}}`,
+      }),
+    });
   }
-}
-
-function getImg(endpoint: string) {
-  const lx = [];
-  for (const dirEntry of Deno.readDirSync("./img/" + endpoint)) {
-    lx.push(urls + "img/" + endpoint + "/" + dirEntry.name);
-  }
-  return lx;
-}
-
-function checkUrl(check: string, value: string) {
-  let recheck = "";
-  for (let i = 0; i < check.length; i++) {
-    const element = check[i];
-    recheck += `[${element}]+`;
-  }
-  const regex = new RegExp(recheck);
-  return regex.test(value);
-}
-function Err(req: any) {
-  req.respond(
-    { body: JSON.stringify({ url: "Le lien n'es pas valide" }), status: 404 },
-  );
 }
